@@ -157,7 +157,9 @@ export default class ReactCalendarTimeline extends Component {
 
     verticalLineClassNamesForTime: PropTypes.func,
 
-    children: PropTypes.node
+    children: PropTypes.node,
+
+    disableZoom: PropTypes.bool
   }
 
   static defaultProps = {
@@ -376,7 +378,7 @@ export default class ReactCalendarTimeline extends Component {
     } else if (forceUpdate) {
       // Calculate new item stack position as canvas may have changed
       const canvasWidth = getCanvasWidth(prevState.width)
-      Object.assign(derivedState, 
+      Object.assign(derivedState,
         stackTimelineItems(
           items,
           groups,
@@ -533,7 +535,8 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   changeZoom = (scale, offset = 0.5) => {
-    const { minZoom, maxZoom } = this.props
+    const { minZoom, maxZoom, disableZoom } = this.props
+    if (disableZoom) return
     const oldZoom = this.state.visibleTimeEnd - this.state.visibleTimeStart
     const newZoom = Math.min(
       Math.max(Math.round(oldZoom * scale), minZoom),
@@ -551,6 +554,7 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   showPeriod = (from, to) => {
+    if (this.props.disableZoom) return
     let visibleTimeStart = from.valueOf()
     let visibleTimeEnd = to.valueOf()
 
@@ -617,7 +621,7 @@ export default class ReactCalendarTimeline extends Component {
 
     let time = calculateTimeForXPosition(
       canvasTimeStart,
-      
+
       canvasTimeEnd,
       getCanvasWidth(width),
       offsetX
@@ -810,7 +814,7 @@ export default class ReactCalendarTimeline extends Component {
     let label = null
 
     if (this.state.dragTime) {
-      label = `${moment(this.state.dragTime).format('LLL')}, 
+      label = `${moment(this.state.dragTime).format('LLL')},
         ${this.state.dragGroupTitle}`
     } else if (this.state.resizeTime) {
       label = moment(this.state.resizeTime).format('LLL')
@@ -827,7 +831,7 @@ export default class ReactCalendarTimeline extends Component {
   sidebar(height, groupHeights) {
     const { sidebarWidth } = this.props
     return (
-      sidebarWidth && 
+      sidebarWidth &&
       <Sidebar
         groups={this.props.groups}
         groupRenderer={this.props.groupRenderer}

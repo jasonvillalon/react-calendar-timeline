@@ -150,6 +150,7 @@ export default class App extends Component {
 
     return (
       <Timeline
+        disableZoom={true}
         groups={groups}
         items={items}
         keys={keys}
